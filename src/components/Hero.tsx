@@ -1,12 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { TreePine } from 'lucide-react';
 
-interface HeroProps {
-  onExplore: () => void;
-}
+const Hero: React.FC = () => {
+  const navigate = useNavigate();
 
-const Hero: React.FC<HeroProps> = ({ onExplore }) => {
+  const handleExplore = () => {
+    navigate('/forest');
+  };
+
   return (
     <section className="min-h-screen flex flex-col items-center justify-center px-6 relative">
       {/* Subtle gradient orb */}
@@ -34,7 +37,7 @@ const Hero: React.FC<HeroProps> = ({ onExplore }) => {
 
         {/* CTA */}
         <div className="opacity-0 animate-fade-rise stagger-3">
-          <Button variant="hero" size="xl" onClick={onExplore}>
+          <Button variant="hero" size="xl" onClick={handleExplore}>
             Explore the forest
           </Button>
         </div>
