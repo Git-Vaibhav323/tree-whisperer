@@ -131,18 +131,80 @@ tree-whisperer/
 
 ## 🌐 Deployment
 
-### Vercel / Netlify
+### 🚀 Recommended: Vercel (Best for React/Vite apps)
 
-1. Push your code to GitHub
-2. Import the repository in Vercel/Netlify
-3. Add environment variables in the dashboard
-4. Deploy!
+**Why Vercel?**
+- ✅ Zero configuration needed
+- ✅ Automatic deployments from GitHub
+- ✅ Built-in serverless functions (API endpoint works!)
+- ✅ Free SSL and custom domains
+- ✅ Fast global CDN
+
+**Steps:**
+1. Go to [vercel.com](https://vercel.com) and sign up with GitHub
+2. Click **"Add New Project"**
+3. Import repository: `Git-Vaibhav323/tree-whisperer`
+4. Configure:
+   - **Framework Preset**: Vite (auto-detected)
+   - **Root Directory**: `./` (default)
+   - **Build Command**: `npm run build` (auto-detected)
+   - **Output Directory**: `dist` (auto-detected)
+5. Add **Environment Variables**:
+   - `VITE_GOOGLE_MAPS_API_KEY` = your Google Maps API key
+   - `GROQ_API_KEY` = your Groq API key
+6. Click **"Deploy"**
+
+Your site will be live at: `https://tree-whisperer.vercel.app`
+
+**Note:** For the API endpoint (`/api/groq-chat`) to work, you'll need to create a Vercel serverless function. The current setup works in development but needs serverless function configuration for production.
+
+### Alternative: Netlify
+
+1. Go to [netlify.com](https://netlify.com) and sign up with GitHub
+2. Click **"Add new site"** → **"Import an existing project"**
+3. Select your GitHub repository
+4. Configure:
+   - **Build command**: `npm run build`
+   - **Publish directory**: `dist`
+5. Add environment variables in **Site settings** → **Environment variables**
+6. Deploy
+
+**Note:** For API endpoints, you'll need to configure Netlify Functions.
+
+### Alternative: Cloudflare Pages
+
+1. Go to [pages.cloudflare.com](https://pages.cloudflare.com)
+2. Sign up/login with GitHub
+3. Connect repository: `Git-Vaibhav323/tree-whisperer`
+4. Configure:
+   - **Framework preset**: Vite
+   - **Build command**: `npm run build`
+   - **Build output directory**: `dist`
+5. Add environment variables
+6. Deploy
+
+### ⚠️ Important: API Endpoint Limitation
+
+The `/api/groq-chat` endpoint currently works in development via Vite middleware. For production:
+
+**Option 1: Use Vercel Serverless Functions** (Recommended)
+- Create `api/groq-chat.ts` in your project root
+- Vercel will automatically deploy it as a serverless function
+
+**Option 2: Use Netlify Functions**
+- Create `netlify/functions/groq-chat.ts`
+- Netlify will handle it automatically
+
+**Option 3: Use a separate backend service**
+- Deploy backend separately (e.g., Railway, Render, Fly.io)
+- Update frontend to call the backend URL
 
 ### Manual Deployment
 
 ```bash
 npm run build
 # Upload the dist/ folder to your hosting provider
+# Note: API endpoint won't work with static hosting
 ```
 
 ## 📝 License
