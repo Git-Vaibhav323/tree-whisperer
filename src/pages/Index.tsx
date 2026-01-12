@@ -1,12 +1,45 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import React, { useState, useRef } from 'react';
+import FloatingLeaves from '@/components/FloatingLeaves';
+import Hero from '@/components/Hero';
+import LivingForest from '@/components/LivingForest';
+import TreeDetail from '@/components/TreeDetail';
+import ImpactStats from '@/components/ImpactStats';
+import Footer from '@/components/Footer';
 
 const Index = () => {
+  const [selectedTreeId, setSelectedTreeId] = useState<string | null>(null);
+  const forestRef = useRef<HTMLDivElement>(null);
+
+  const handleExplore = () => {
+    forestRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleSelectTree = (id: string) => {
+    setSelectedTreeId(id);
+  };
+
+  const handleCloseDetail = () => {
+    setSelectedTreeId(null);
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen relative">
+      <FloatingLeaves />
+      
+      <Hero onExplore={handleExplore} />
+      
+      <div ref={forestRef}>
+        <LivingForest onSelectTree={handleSelectTree} />
       </div>
+      
+      <ImpactStats />
+      
+      <Footer />
+
+      <TreeDetail
+        isOpen={selectedTreeId !== null}
+        onClose={handleCloseDetail}
+      />
     </div>
   );
 };
