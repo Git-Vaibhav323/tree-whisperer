@@ -1,41 +1,36 @@
-// Vercel Serverless Function for Groq API
-// This file enables the API endpoint to work in production on Vercel
+// Vercel Serverless Function for Groq API (JavaScript version)
+// This ensures compatibility if TypeScript compilation has issues
 
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-export default async function handler(
-  request: VercelRequest,
-  response: VercelResponse,
-) {
+module.exports = async function handler(req, res) {
   // Enable CORS
-  response.setHeader('Access-Control-Allow-Credentials', 'true');
-  response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  response.setHeader(
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
     'Access-Control-Allow-Headers',
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
   );
 
   // Handle preflight requests
-  if (request.method === 'OPTIONS') {
-    return response.status(200).end();
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
 
   // Only allow POST requests
-  if (request.method !== 'POST') {
-    return response.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { prompt } = request.body;
+    const { prompt } = req.body;
 
     if (!prompt || typeof prompt !== 'string') {
-      return response.status(400).json({ error: 'Missing or invalid prompt' });
+      return res.status(400).json({ error: 'Missing or invalid prompt' });
     }
 
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
-      return response.status(500).json({
+      return res.status(500).json({
         error: 'Server not configured with GROQ_API_KEY. Please check your environment variables.',
       });
     }
@@ -76,16 +71,16 @@ export default async function handler(
       } catch (e) {
         // Keep default error message
       }
-      return response.status(500).json({ error: errorMessage });
+      return res.status(500).json({ error: errorMessage });
     }
 
     const data = await groqRes.json();
     const reply =
       data?.choices?.[0]?.message?.content ?? 'No response from model.';
 
-    return response.status(200).json({ reply });
+    return res.status(200).json({ reply });
   } catch (err) {
     console.error('API error:', err);
-    return response.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
-}
+};

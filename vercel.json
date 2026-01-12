@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/groq-chat.ts": {
+      "runtime": "@vercel/node"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/groq-chat",
+      "destination": "/api/groq-chat"
+    }
+  ]
+}

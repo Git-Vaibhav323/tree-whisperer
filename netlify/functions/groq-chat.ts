@@ -1,43 +1,56 @@
-// Vercel Serverless Function for Groq API
-// This file enables the API endpoint to work in production on Vercel
+// Netlify Serverless Function for Groq API
+import type { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
 
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-export default async function handler(
-  request: VercelRequest,
-  response: VercelResponse,
-) {
+export const handler: Handler = async (
+  event: HandlerEvent,
+  context: HandlerContext
+) => {
   // Enable CORS
-  response.setHeader('Access-Control-Allow-Credentials', 'true');
-  response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  response.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Content-Type': 'application/json',
+  };
 
   // Handle preflight requests
-  if (request.method === 'OPTIONS') {
-    return response.status(200).end();
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers,
+      body: '',
+    };
   }
 
   // Only allow POST requests
-  if (request.method !== 'POST') {
-    return response.status(405).json({ error: 'Method not allowed' });
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      headers,
+      body: JSON.stringify({ error: 'Method not allowed' }),
+    };
   }
 
   try {
-    const { prompt } = request.body;
+    const { prompt } = JSON.parse(event.body || '{}');
 
     if (!prompt || typeof prompt !== 'string') {
-      return response.status(400).json({ error: 'Missing or invalid prompt' });
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'Missing or invalid prompt' }),
+      };
     }
 
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
-      return response.status(500).json({
-        error: 'Server not configured with GROQ_API_KEY. Please check your environment variables.',
-      });
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          error: 'Server not configured with GROQ_API_KEY. Please check your environment variables.',
+        }),
+      };
     }
 
     const groqRes = await fetch(
@@ -76,16 +89,28 @@ export default async function handler(
       } catch (e) {
         // Keep default error message
       }
-      return response.status(500).json({ error: errorMessage });
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ error: errorMessage }),
+      };
     }
 
     const data = await groqRes.json();
     const reply =
       data?.choices?.[0]?.message?.content ?? 'No response from model.';
 
-    return response.status(200).json({ reply });
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({ reply }),
+    };
   } catch (err) {
     console.error('API error:', err);
-    return response.status(500).json({ error: 'Internal server error' });
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: 'Internal server error' }),
+    };
   }
-}
+};

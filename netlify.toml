@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/api/groq-chat"
+  to = "/.netlify/functions/groq-chat"
+  status = 200
+  force = true
+
+[build.environment]
+  NODE_VERSION = "18"
