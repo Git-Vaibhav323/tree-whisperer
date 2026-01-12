@@ -158,18 +158,23 @@ Your site will be live at: `https://tree-whisperer.vercel.app`
 
 **Note:** For the API endpoint (`/api/groq-chat`) to work, you'll need to create a Vercel serverless function. The current setup works in development but needs serverless function configuration for production.
 
-### Alternative: Netlify
+### Alternative: Netlify ✅ (Recommended if using Netlify)
 
 1. Go to [netlify.com](https://netlify.com) and sign up with GitHub
 2. Click **"Add new site"** → **"Import an existing project"**
-3. Select your GitHub repository
+3. Select your GitHub repository: `Git-Vaibhav323/tree-whisperer`
 4. Configure:
    - **Build command**: `npm run build`
    - **Publish directory**: `dist`
-5. Add environment variables in **Site settings** → **Environment variables**
-6. Deploy
+5. Add **Environment Variables** in **Site settings** → **Environment variables**:
+   - `VITE_GOOGLE_MAPS_API_KEY` = your Google Maps API key
+   - `GROQ_API_KEY` = your Groq API key
+6. Click **"Deploy site"**
 
-**Note:** For API endpoints, you'll need to configure Netlify Functions.
+**✅ Netlify Function Setup:**
+- The `netlify/functions/groq-chat.ts` function is already configured
+- The `netlify.toml` file includes the redirect rule
+- After deployment, your API endpoint will be available at `/api/groq-chat`
 
 ### Alternative: Cloudflare Pages
 
